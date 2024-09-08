@@ -5,11 +5,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . ./user_service
+COPY . ./api_gateway
 
 LABEL maintainer="Arpan Patnaik"
 
-EXPOSE 8001
+EXPOSE 8000
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

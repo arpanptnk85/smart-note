@@ -1,0 +1,11 @@
+services:
+  user-service:
+    build: ./user_service  # Path to your user_service directory
+    ports:
+      - "8001:8001"  # Expose port 8001 inside the container to 8001 on your host
+  api-gateway:
+    build: ./api_gateway  # Path to your api directory
+    ports:
+      - "8000:8000"  # Expose port 5000 inside the container to 5000 on your host
+    depends_on:
+      - user-service  # Ensure User Service starts before API Gateway
