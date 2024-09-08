@@ -6,6 +6,6 @@ services:
   api-gateway:
     build: ./api_gateway  # Path to your api directory
     ports:
-      - "8000:8000"  # Expose port 5000 inside the container to 5000 on your host
+      - "8000:8000"  # Expose port 8000 inside the container to 8000 on your host
     depends_on:
       - user-service  # Ensure User Service starts before API Gateway
