@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 
 # Docker
-api_gateway/.dockerignore
-user_service/.dockerignore
+app/api_gateway/.dockerignore
+app/user_service/.dockerignore
