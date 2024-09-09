@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+app/api_gateway/.DS_Store
 
 # C extensions
 *.so
