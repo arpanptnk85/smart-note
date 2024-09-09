@@ -164,6 +164,3 @@ cython_debug/
 # Docker
 app/api_gateway/.dockerignore
 app/user_service/.dockerignore
-
-
-.DS_Store
