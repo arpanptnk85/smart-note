@@ -6,4 +6,4 @@ set -e
 # Log the startup process
 echo "Starting the Main Service..."
 
-exec flask --app api_gateway/app run --host 0.0.0.0 --port 8000
+exec flask --app api_service/app run --host 0.0.0.0 --port 8000

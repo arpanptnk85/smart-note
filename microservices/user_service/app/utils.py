@@ -7,6 +7,7 @@ def serialize_document(doc: Any):
     """
     Convert mongoengine document to a JSON-Serializable dictionary.
     """
+
     def serialize(value: Any):
 
         if isinstance(value, ObjectId):
@@ -19,5 +20,5 @@ def serialize_document(doc: Any):
             return [serialize(item) for item in value]
         else:
             return value
-    
+    if doc is None: return None
     return serialize(doc.to_mongo().to_dict())
