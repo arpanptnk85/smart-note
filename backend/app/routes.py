@@ -1,5 +1,8 @@
-from flask import ( Blueprint, jsonify, request )
+import jwt
+from app.auth import login_user, validate_access_token
 from app.utils import serialize_document
+from flask import ( Blueprint, jsonify, request )
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.crud import ( create_user, get_users, get_user_by_id )
 
 usernotes_bp = Blueprint('usernotes', __name__)
@@ -17,7 +20,9 @@ def register():
 def login():
     if request.method == 'POST':
         data = request.get_json()
-        return jsonify({'token': 'aa2r3v3cq'}), 200
+        username = data.get('username')
+        password = data.get('password')
+        return login_user(username, password)
 
 @usernotes_bp.route('/auth/logout', methods=['POST'])
 def logout():
@@ -42,3 +47,9 @@ def fetch_users():
         return jsonify(serialized_data), 200
     except Exception as e:
         print(f'Error fetching user {e}')
+
+@usernotes_bp.route('/auth/token-verify', methods=['POST'])
+@jwt_required()
+def verify_token():
+    user_id = get_jwt_identity()
+    return jsonify({'message': 'Token is valid', 'user_id': user_id}), 200
