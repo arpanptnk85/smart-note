@@ -1,7 +1,7 @@
 import os
 import jwt
 from flask import jsonify
-from app.models import User
+from app.models import Users
 from typing import Dict, Any
 from datetime import timedelta, datetime, timezone
 from app.utils import serialize_document
@@ -20,23 +20,24 @@ def generate_access_token(user_id: Any):
     Returns
         Encoded JWT Token.
     """
-    # Generate the jwt encoded token
-    # payload = {
-    #     'sub': user_id,
-    #     'iat': datetime.now(timezone.utc),
-    #     'exp': datetime.now(timezone.utc) + timedelta(hours=1),
-    #     'type': 'access',
-    # }
-    # token = jwt.encode(payload=payload, key=SECRET_KEY, algorithm=ALGORITHM)
     token = create_access_token(identity=user_id, expires_delta=timedelta(hours=1))
     return token
 
 def validate_access_token(jwt_token: str):
+    """
+    Validates a proivded JWT Token.
+    
+    Args
+        jwt_token: A JWT Token to be passed as argument.
+    
+    Returns
+        payload
+    """
     payload = jwt.decode(jwt=jwt_token, key=SECRET_KEY, algorithms=[ALGORITHM])
     return payload
 
 def login_user(username: str, password: str) -> Any:
-    _user = User.objects(username=username).first()
+    _user = Users.objects(username=username).first()
     if not _user:
         return jsonify({'message': 'Invalid username'}), 401
     

@@ -1,7 +1,9 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-from .routes import usernotes_bp
+from .routes.auth_routes import auth_bp
+from .routes.user_routes import user_bp
+from .routes.note_routes import note_bp
 from flask_jwt_extended import JWTManager
 
 load_dotenv()
@@ -9,17 +11,6 @@ load_dotenv()
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE_URI='mongodb://localhost:27017/smart-note',
-    )
-
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed
-        app.config.from_mapping(test_config)
 
     # ensure the instance folder exists
     try:
@@ -27,11 +18,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Database 
+    # Initialize the Database 
     from . import database
     database.connect_db()
 
-    # JWT
     # Set the secret key for JWT
     app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # Change this in production
     
@@ -41,7 +31,9 @@ def create_app(test_config=None):
     # Initialize JWT Manager
     jwt = JWTManager(app)
 
-    # Routes
-    app.register_blueprint(usernotes_bp)
+    # Register blueprint for routes
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(note_bp)
     
     return app

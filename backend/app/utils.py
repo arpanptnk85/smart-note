@@ -1,13 +1,31 @@
+from uuid import uuid4
 from bson import ObjectId
-from datetime import datetime
-from typing import Any
+from typing import Any, Dict
+from datetime import datetime, timezone
 from mongoengine.queryset import QuerySet
 
-def serialize_document(doc: Any):
+def generate_hex_code(length: int = 6):
+    return str(uuid4().hex[:length])
+
+def get_current_time() -> datetime:
+    """
+    Generates the current time in UTC timezone.
+
+    Returns
+        A datetime object
+    """
+    return datetime.now(timezone.utc)
+
+def serialize_document(doc: Any) -> Dict:
     """
     Convert mongoengine document to a JSON-Serializable dictionary.
-    """
 
+    Args
+        doc: A Object of type Document.
+
+    Returns:
+        Dict 
+    """
     def serialize(value: Any):
 
         if isinstance(value, ObjectId):
