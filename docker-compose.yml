@@ -1,0 +1,21 @@
+services:
+  backend-service:
+    build: ./backend
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URI=mongodb://mongo-service:27017/smart-note
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo-service
+
+  mongo-service:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
