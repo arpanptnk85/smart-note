@@ -6,7 +6,7 @@ services:
     environment:
       - DATABASE_URI=mongodb://mongo-service:27017/smart-note
     volumes:
-      - .:/app
+      - ./backend:/app
     depends_on:
       - mongo-service
 
