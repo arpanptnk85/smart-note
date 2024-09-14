@@ -3,7 +3,7 @@ import jwt
 from flask import jsonify
 from app.models import Users
 from typing import Dict, Any
-from datetime import timedelta, datetime, timezone
+from datetime import timedelta
 from app.utils import serialize_document
 from flask_jwt_extended import create_access_token
 

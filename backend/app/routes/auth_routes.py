@@ -1,5 +1,5 @@
 import jwt
-from app.auth import login_user
+from app.auth import login_user, generate_access_token
 from app.utils import serialize_document, DuplicateItemError
 from flask import ( Blueprint, jsonify, request )
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -13,7 +13,8 @@ def register():
     try:
         user = create_user(username=data.get('username'), password=data.get('password'), email=data.get('email'))
         serialized_data = serialize_document(user)
-        return jsonify(serialized_data)
+        access_token = generate_access_token(user_id=user.get('_id'))
+        return jsonify({ 'user': serialized_data, 'token': access_token }), 201
     except DuplicateItemError as e:
         return jsonify({'message': str(e)}), 400
     except Exception as e:
@@ -23,9 +24,12 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    return login_user(username, password)
+    try:
+        username = data.get('username')
+        password = data.get('password')
+        return login_user(username, password)
+    except Exception as e:
+        return jsonify({'message': 'An unexpected error occurred'}), 500
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
