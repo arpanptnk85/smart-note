@@ -1,8 +1,8 @@
 .container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
+  align-items: center;
+  flex-direction: column;
 }
 
 .login {
@@ -47,6 +47,7 @@
   }
 
 .login p {
+  margin-top: 10px;
   text-align: center;
 }
 
