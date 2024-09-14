@@ -1,8 +1,17 @@
 from app.models import Users
 from typing import Any
+from app.utils import DuplicateItemError
 
 # Create an user
 def create_user(username: str, password: str, email: str) -> Any:
+    users = get_users()
+    existing_usernames = set(user['username'] for user in users)
+    existing_emails = set(user['email'] for user in users)
+    if username in existing_usernames:
+        raise DuplicateItemError('username', username)
+    if email in existing_emails:
+        raise DuplicateItemError('email', email)
+
     user = Users(
         username=username,
         email=email,

@@ -45,4 +45,7 @@ def login_user(username: str, password: str) -> Any:
     if user.get('password') != password:
         return jsonify({'message': 'Invalid username or password'}), 401
     access_token = generate_access_token(user_id=user.get('_id'))
-    return jsonify(access_token=access_token), 200
+    return jsonify({
+        'user': user,
+        'token': access_token,
+    }), 200

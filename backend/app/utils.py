@@ -38,9 +38,17 @@ def serialize_document(doc: Any) -> Dict:
             return [serialize(item) for item in value]
         else:
             return value
+        
     if doc is None: return None
 
     if isinstance(doc, QuerySet):
         return [serialize(d.to_mongo().to_dict()) for d in doc]
     else:
         return serialize(doc.to_mongo().to_dict())
+    
+class DuplicateItemError(Exception):
+    """Exception raised when an item is already present in a collection."""
+
+    def __init__(self, item_name: str, item_value: str):
+        """Initialize the exception with the duplicate item."""
+        super().__init__(f"{item_name.capitalize()} '{item_value}' already exists.")

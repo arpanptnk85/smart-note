@@ -1,6 +1,6 @@
 import jwt
 from app.auth import login_user
-from app.utils import serialize_document
+from app.utils import serialize_document, DuplicateItemError
 from flask import ( Blueprint, jsonify, request )
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.operations.users_service import ( create_user )
@@ -9,20 +9,23 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    if request.method == 'POST':
-        data = request.get_json()
+    data = request.get_json()
+    try:
         user = create_user(username=data.get('username'), password=data.get('password'), email=data.get('email'))
         serialized_data = serialize_document(user)
         return jsonify(serialized_data)
-    return jsonify({'message': 'UnAuthorized Access Denied'}), 404
+    except DuplicateItemError as e:
+        return jsonify({'message': str(e)}), 400
+    except Exception as e:
+        return jsonify({'message': 'An unexpected error occurred'}), 500
+    
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        data = request.get_json()
-        username = data.get('username')
-        password = data.get('password')
-        return login_user(username, password)
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    return login_user(username, password)
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
