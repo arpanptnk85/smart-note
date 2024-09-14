@@ -4,7 +4,7 @@ from app.utils import get_current_time
 
 # User Model
 class Users(Document):
-    username = StringField(required=True, max_length=50)
+    username = StringField(required=True, max_length=50, unique=True)
     email = StringField(required=True, unique=True)
     password = StringField(required=True)
     created_at = DateTimeField(default=get_current_time())
