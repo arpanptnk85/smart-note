@@ -3,4 +3,18 @@
     margin: 0;
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+:root {
+    --background-color: #fff;
+    --text-color: #111;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #212121;
+        --text-color: #fff;
+    }
 }
