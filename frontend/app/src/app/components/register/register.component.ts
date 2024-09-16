@@ -45,7 +45,7 @@ export class RegisterComponent {
             this.errorMessage = 'Registration failed. Please try again later.';
           }
           this.errorMessageTimeout();
-        }
+        },
       });
   }
 }
