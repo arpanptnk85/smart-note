@@ -5,7 +5,7 @@ from app.operations.users_service import ( get_users, get_user_by_id )
 
 user_bp = Blueprint('user', __name__)
 
-@user_bp.route('/users/<user_id>', methods=['GET'])
+@user_bp.route('v1/users/<user_id>', methods=['GET'])
 @jwt_required()
 def fetch_user_by_id(user_id):
     if user_id is None:
@@ -18,7 +18,7 @@ def fetch_user_by_id(user_id):
         print(f'Error fetching user {e}')
         return jsonify({'error': e}), 422
 
-@user_bp.route('/users', methods=['GET'])
+@user_bp.route('v1/users', methods=['GET'])
 @jwt_required()
 def fetch_users():
     try:
