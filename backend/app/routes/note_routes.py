@@ -5,7 +5,7 @@ from app.operations.notes_service import ( add_note )
 
 note_bp = Blueprint('note', __name__, url_prefix='/notes')
 
-@note_bp.route('v1/add-note', methods=['POST'])
+@note_bp.route('/v1/add-note', methods=['POST'])
 @jwt_required()
 def create_note():
     user_id = get_jwt_identity()

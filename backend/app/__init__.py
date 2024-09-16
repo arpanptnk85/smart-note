@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 from dotenv import load_dotenv
 from .routes.auth_routes import auth_bp
 from .routes.user_routes import user_bp
@@ -30,6 +31,11 @@ def create_app(test_config=None):
 
     # Initialize JWT Manager
     jwt = JWTManager(app)
+
+    # Cross-Site 
+    CORS(app, resources={
+        r"/auth/*": {'origins': 'http://localhost:4200', 'methods': ['GET', 'POST']},
+    })
 
     # Register blueprint for routes
     app.register_blueprint(auth_bp)
