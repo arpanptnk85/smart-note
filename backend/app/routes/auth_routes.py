@@ -12,7 +12,13 @@ def register():
     data = request.get_json()
     try:
         user = create_user(username=data.get('username'), password=data.get('password'), email=data.get('email'))
+<<<<<<< Updated upstream
         return jsonify({ 'message': 'success' }), 201
+=======
+        serialized_data = serialize_document(user)
+        access_token = generate_access_token(user_id=user.get('_id'))
+        return jsonify({ 'user': serialized_data, 'token': access_token }), 201
+>>>>>>> Stashed changes
     except DuplicateItemError as e:
         return jsonify({'message': str(e)}), 400
     except Exception as e:
