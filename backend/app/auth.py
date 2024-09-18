@@ -5,6 +5,7 @@ from app.models import Users
 from typing import Dict, Any
 from datetime import timedelta
 from app.utils import serialize_document
+from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token
 
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -39,13 +40,19 @@ def validate_access_token(jwt_token: str):
 def login_user(username: str, password: str) -> Any:
     _user = Users.objects(username=username).first()
     if not _user:
-        return jsonify({'message': 'Invalid username'}), 401
-    
-    user = serialize_document(_user)
-    if user.get('password') != password:
         return jsonify({'message': 'Invalid username or password'}), 401
-    access_token = generate_access_token(user_id=user.get('_id'))
+
+    if not check_password_hash(_user.password, password):
+        return jsonify({ 'message': 'Invalid username or password' })
+
+    access_token = generate_access_token(user_id=_user._id)
+
+    user_data = {
+        'id': str(_user._id),
+        'username': _user.username,
+        'email': _user.email
+    }
     return jsonify({
-        'user': user,
+        'user': user_data,
         'token': access_token,
     }), 200
