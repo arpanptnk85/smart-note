@@ -6,12 +6,9 @@ import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 interface User {
-  _id: string;
+  id: string;
   username: string;
   email: string;
-  password: string;
-  created_at: any;
-  updated_at: any;
 }
 
 @Injectable({
