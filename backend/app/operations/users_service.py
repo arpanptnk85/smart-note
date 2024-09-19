@@ -1,10 +1,19 @@
+import logging
 from app.models import Users
 from typing import Any, Dict
 from app.utils import DuplicateItemError
 from werkzeug.security import generate_password_hash
 from mongoengine.errors import DoesNotExist, ValidationError, NotUniqueError
 
+# Setup logging
+logger = logging.getLogger(__name__)
+
 def get_user_info(user: Users) -> Dict[str, Any]:
+
+    if not user:
+        logger.error(f'User does not exists.')
+        return {}
+
     try:
         return {
             'id': str(user.id),
@@ -12,7 +21,7 @@ def get_user_info(user: Users) -> Dict[str, Any]:
             'username': user.username
         }
     except Exception as e:
-        print(f'Error creating user info {e}')
+        logger.error(f'Unexpected error occurred at `get_user_info`: {e}')
         return {}
 
 # Create an user
@@ -33,16 +42,10 @@ def create_user(username: str, password: str, email: str) -> Any:
         # Hashed password
         _password = generate_password_hash(password)
 
-        user = Users(
-            username=username,
-            email=email,
-            password=_password,
-        )
+        user = Users(username=username, email=email, password=_password)
         user.save()
 
-        user_info = get_user_info(user=user)
-
-        return user_info
+        return get_user_info(user=user)
     
     except NotUniqueError as e:
         print(f"Duplicate entry {e}")
@@ -58,46 +61,60 @@ def create_user(username: str, password: str, email: str) -> Any:
 
 # Get user by _id
 def get_user_by_id(user_id):
-    user = Users.objects(id=user_id).first()
-    user_info = get_user_info(user=user)
-    return user_info
+    try:
+        user = Users.objects(id=user_id).first()
+        return get_user_info(user=user)
+    except DoesNotExist:
+        logger.error(f'User with ID {user_id} does not exists.')
+        return {}
 
 # Get user by email
 def get_user_by_email(email):
-    user = Users.objects(email=email).first()
-    user_info = get_user_info(user=user)
-    return user_info
+    try:
+        user = Users.objects(email=email).first()
+        return get_user_info(user=user)
+    except DoesNotExist:
+        logger.error(f'User with email {email} does not exists.')
 
 # Get all users
-def get_users():
-    users = Users.objects.all()
-    user_infos = [get_user_info(user=u) for u in users]
-    return user_infos
-
+def get_users(limit: int = 100):
+    users = Users.objects.limit(limit).only('username', 'email', 'id')
+    return [get_user_info(user=u) for u in users]
+    
 # Update an user
 def update_user(user_id, **kwargs):
-    user = Users.objects(id=user_id).first()
-    if user:
+    try:
+        user = Users.objects(id=user_id).first()
         for key, value in kwargs.items():
+            if key == 'password': # Hash the password
+                value = generate_password_hash(value)
             setattr(user, key, value)
         user.save()
-    user_info = get_user_info(user=user)
-    return user_info
+        return get_user_info(user=user)
+    
+    except ValidationError as e:
+        logger.error(f'Validation error while updating user: {e}')
+        raise ValueError(f'Invalid data: {e}')
+    
+    except DoesNotExist:
+        logger.error(f'User with ID: {user_id} does not exists')
+        return None
 
 # Delete an user
 def delete_user(user_id):
-    user = Users.objects(id=user_id).first()
-    if not user:
-        raise ValueError("User Not Found")
-    if user:
+    try:
+        user = Users.objects(id=user_id).first()
         user.delete()
-    return True
+        return True
+    except DoesNotExist:
+        logger.error(f'User with ID {user_id} does not exists.')
+        raise ValueError('User not found')
 
 # Validate user
 def validate_user(user_id: str) -> bool:
     """ User verification """
     try:
-        user = Users.objects.only('id').get(id=user_id)
+        Users.objects.only('id').get(id=user_id)
         return True
     except (DoesNotExist, ValidationError) as e:
         print(f'User validation failed: {e}')
