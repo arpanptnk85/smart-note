@@ -1,8 +1,19 @@
 from app.models import Users
-from typing import Any
+from typing import Any, Dict
 from app.utils import DuplicateItemError
 from werkzeug.security import generate_password_hash
 from mongoengine.errors import DoesNotExist, ValidationError, NotUniqueError
+
+def get_user_info(user: Users) -> Dict[str, Any]:
+    try:
+        return {
+            'id': str(user.id),
+            'email': user.email,
+            'username': user.username
+        }
+    except Exception as e:
+        print(f'Error creating user info {e}')
+        return {}
 
 # Create an user
 def create_user(username: str, password: str, email: str) -> Any:
@@ -28,7 +39,10 @@ def create_user(username: str, password: str, email: str) -> Any:
             password=_password,
         )
         user.save()
-        return user
+
+        user_info = get_user_info(user=user)
+
+        return user_info
     
     except NotUniqueError as e:
         print(f"Duplicate entry {e}")
@@ -44,15 +58,21 @@ def create_user(username: str, password: str, email: str) -> Any:
 
 # Get user by _id
 def get_user_by_id(user_id):
-    return Users.objects(id=user_id).first()
+    user = Users.objects(id=user_id).first()
+    user_info = get_user_info(user=user)
+    return user_info
 
 # Get user by email
 def get_user_by_email(email):
-    return Users.objects(email=email).first()
+    user = Users.objects(email=email).first()
+    user_info = get_user_info(user=user)
+    return user_info
 
 # Get all users
 def get_users():
-    return Users.objects.all()
+    users = Users.objects.all()
+    user_infos = [get_user_info(user=u) for u in users]
+    return user_infos
 
 # Update an user
 def update_user(user_id, **kwargs):
@@ -61,14 +81,17 @@ def update_user(user_id, **kwargs):
         for key, value in kwargs.items():
             setattr(user, key, value)
         user.save()
-    return user
+    user_info = get_user_info(user=user)
+    return user_info
 
 # Delete an user
 def delete_user(user_id):
     user = Users.objects(id=user_id).first()
+    if not user:
+        raise ValueError("User Not Found")
     if user:
         user.delete()
-    return user
+    return True
 
 # Validate user
 def validate_user(user_id: str) -> bool:

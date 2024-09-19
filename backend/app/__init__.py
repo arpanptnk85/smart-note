@@ -23,6 +23,9 @@ def create_app(test_config=None):
     from . import database
     database.connect_db()
 
+    # Secret key 
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
     # Set the secret key for JWT
     app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # Change this in production
     

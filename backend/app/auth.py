@@ -39,20 +39,28 @@ def validate_access_token(jwt_token: str):
 
 def login_user(username: str, password: str) -> Any:
     _user = Users.objects(username=username).first()
+
     if not _user:
         return jsonify({'message': 'Invalid username or password'}), 401
 
     if not check_password_hash(_user.password, password):
         return jsonify({ 'message': 'Invalid username or password' })
 
-    access_token = generate_access_token(user_id=_user._id)
+    try:
+        access_token = generate_access_token(user_id=str(_user.id))
+        if not access_token:
+            raise ValueError('Failed to generate access token at login')
 
-    user_data = {
-        'id': str(_user._id),
-        'username': _user.username,
-        'email': _user.email
-    }
-    return jsonify({
-        'user': user_data,
-        'token': access_token,
-    }), 200
+        user_data = {
+            'id': str(_user.id),
+            'email': _user.email,
+            'username': _user.username
+        }
+
+        return jsonify({
+            'user': user_data,
+            'token': access_token,
+        }), 200
+    except Exception as e:
+        print(f'Error `login` {e}')
+        return jsonify({ 'message': 'Unexpected error occurred while `login`' }), 500

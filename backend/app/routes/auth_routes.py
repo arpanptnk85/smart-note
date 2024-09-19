@@ -1,6 +1,6 @@
 from app.auth import login_user
 from app.utils import DuplicateItemError
-from flask import ( Blueprint, jsonify, request )
+from flask import ( Blueprint, jsonify, request, session )
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.operations.users_service import ( create_user )
 
@@ -10,14 +10,15 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
     data = request.get_json()
 
-    username = data.get('username')
+    _username = data.get('username')
     _password = data.get('password')
+    _email = data.get('email')
 
-    if not username or not _password:
+    if not _username or not _password or not _email:
         return jsonify({ 'message': 'Missing required fields' }), 400
 
     try:
-        user = create_user(username=data.get('username'), password=data.get('password'), email=data.get('email'))
+        user = create_user(username=_username, password=_password, email=_email)
         return jsonify({ 'message': 'success' }), 201
     except DuplicateItemError as e:
         return jsonify({'message': str(e)}), 400
@@ -36,8 +37,10 @@ def login():
         return jsonify({'message': 'An unexpected error occurred'}), 500
 
 @auth_bp.route('/logout', methods=['POST'])
+@jwt_required()
 def logout():
-    return jsonify({'message': 'User Logout'}), 200
+    session.clear()
+    return jsonify({'message': 'User Logged out'}), 200
 
 @auth_bp.route('/token-verify', methods=['POST'])
 @jwt_required()

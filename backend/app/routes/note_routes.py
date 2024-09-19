@@ -4,7 +4,7 @@ from app.operations.notes_service import ( add_note )
 from app.operations.users_service import validate_user
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-note_bp = Blueprint('note', __name__, url_prefix='/v1/api/notes')
+note_bp = Blueprint('note', __name__, url_prefix='/api/v1/notes')
 
 @note_bp.route('/add-note', methods=['POST'])
 @jwt_required()

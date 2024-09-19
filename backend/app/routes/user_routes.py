@@ -3,7 +3,7 @@ from app.utils import serialize_document
 from flask_jwt_extended import jwt_required
 from app.operations.users_service import ( get_users, get_user_by_id )
 
-user_bp = Blueprint('user', __name__, url_prefix='/v1/api/users')
+user_bp = Blueprint('user', __name__, url_prefix='/api/v1/users')
 
 @user_bp.route('/<user_id>', methods=['GET'])
 @jwt_required()
@@ -12,8 +12,7 @@ def fetch_user_by_id(user_id):
         return jsonify({'message': 'Not Found'})
     try:
         user = get_user_by_id(user_id=user_id)
-        serialized_data = serialize_document(user)
-        return jsonify(serialized_data), 200
+        return jsonify({ 'message': user }), 200
     except Exception as e:
         print(f'Error fetching user {e}')
         return jsonify({'error': e}), 422
@@ -22,9 +21,8 @@ def fetch_user_by_id(user_id):
 @jwt_required()
 def fetch_users():
     try:
-        user = get_users()
-        serialized_data = serialize_document(user)
-        return jsonify(serialized_data), 200
+        users = get_users()
+        return jsonify({ 'message': users }), 200
     except Exception as e:
         print(f'Error fetching user {e}')
         return jsonify({'error': e}), 422
