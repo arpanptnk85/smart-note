@@ -15,7 +15,7 @@ def create_note():
         return jsonify({ 'message': 'Unauthorized Access' }), 401
     
     if not validate_user(user_id): 
-        return jsonify({ 'message': 'Unauthorized Access' }), 400
+        return jsonify({ 'message': 'Unauthorized Access' }), 401
     
     data = request.get_json()
 
