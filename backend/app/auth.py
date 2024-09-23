@@ -3,8 +3,9 @@ import jwt
 from flask import jsonify
 from app.models import Users
 from typing import Dict, Any
-from datetime import timedelta, datetime, timezone
+from datetime import timedelta
 from app.utils import serialize_document
+from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token
 
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -38,11 +39,28 @@ def validate_access_token(jwt_token: str):
 
 def login_user(username: str, password: str) -> Any:
     _user = Users.objects(username=username).first()
+
     if not _user:
-        return jsonify({'message': 'Invalid username'}), 401
-    
-    user = serialize_document(_user)
-    if user.get('password') != password:
         return jsonify({'message': 'Invalid username or password'}), 401
-    access_token = generate_access_token(user_id=user.get('_id'))
-    return jsonify(access_token=access_token), 200
+
+    if not check_password_hash(_user.password, password):
+        return jsonify({ 'message': 'Invalid username or password' })
+
+    try:
+        access_token = generate_access_token(user_id=str(_user.id))
+        if not access_token:
+            raise ValueError('Failed to generate access token at login')
+
+        user_data = {
+            'id': str(_user.id),
+            'email': _user.email,
+            'username': _user.username
+        }
+
+        return jsonify({
+            'user': user_data,
+            'token': access_token,
+        }), 200
+    except Exception as e:
+        print(f'Error `login` {e}')
+        return jsonify({ 'message': 'Unexpected error occurred while `login`' }), 500
