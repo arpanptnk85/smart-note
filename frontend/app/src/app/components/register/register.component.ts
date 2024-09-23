@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
 import { SharedModule } from '../../../shared';
+import { AuthService } from '../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [SharedModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
-
-  constructor() { }
+  constructor(private auth: AuthService) {}
 
   username: string | null = null;
   password: string | null = null;
@@ -25,12 +26,26 @@ export class RegisterComponent {
 
   register(): void {
     if (!this.username || !this.password || !this.userEmail) {
-      this.errorMessage = "Please ensure all fields are filled out correctly."
+      this.errorMessage = 'Please ensure all fields are filled out correctly.';
       this.errorMessageTimeout();
       return;
-    };
-    this.errorMessage = "There was an error processing your registration. Please try again later."
-    this.errorMessageTimeout();
+    }
+    this.auth
+      .registerUser({
+        username: this.username,
+        password: this.password,
+        email: this.userEmail,
+      })
+      .pipe()
+      .subscribe({
+        error: (err) => {
+          if (err && err.error.message) {
+            this.errorMessage = err.error.message;
+          } else {
+            this.errorMessage = 'Registration failed. Please try again later.';
+          }
+          this.errorMessageTimeout();
+        },
+      });
   }
-
 }

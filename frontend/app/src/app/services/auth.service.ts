@@ -1,38 +1,55 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 interface User {
-  _id: string;
+  id: string;
   username: string;
   email: string;
-  password: string;
-  created_at: any;
-  updated_at: any;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private jwt: JwtHelperService) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private jwt: JwtHelperService
+  ) {}
 
-  public login(credentials: any): Observable<any> {
-    return this.http.post<any>(
-      'http://localhost:5000/auth/login', credentials
-    ).pipe(map(response => {
-      if (response && response.token) {
-        localStorage.setItem('token', response.token);
-        this.currentUserSubject.next(response.user);
-      }
-      return response;
-    }));
+  private baseUrl = 'http://127.0.0.1:5000/auth/';
+
+  public registerUser(data: {
+    username: string;
+    password: string;
+    email: string;
+  }): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'register', data).pipe(
+      map((response) => {
+        if (response) {
+          this.router.navigate(['/login']);
+        }
+      })
+    );
+  }
+
+  public loginUser(credentials: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'login', credentials).pipe(
+      map((response) => {
+        if (response && response.token) {
+          localStorage.setItem('token', response.token);
+          this.currentUserSubject.next(response.user);
+          return response;
+        }
+      })
+    );
   }
 
   public logout(): void {

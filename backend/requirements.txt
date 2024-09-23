@@ -3,3 +3,4 @@ mongoengine==0.29.0
 python-dotenv==1.0.1
 PyJWT==2.9.0
 Flask-JWT-Extended==4.6.0
+flask-cors==5.0.0
