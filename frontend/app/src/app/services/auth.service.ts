@@ -55,6 +55,7 @@ export class AuthService {
   public logout(): void {
     localStorage.removeItem('token');
     this.currentUserSubject.next(null);
+    this.router.navigate(['/login']);
   }
 
   public isLoggedIn(): boolean {
