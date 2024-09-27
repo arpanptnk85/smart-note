@@ -1,2 +1,31 @@
-<p>Dashboard</p>
-<p (click)="logoutUser()">Logout</p>
+<section>
+    <div>
+        <button (click)="getNotes()">
+            Notes
+        </button>
+        <button (click)="logoutUser()">
+            Logout
+        </button>
+    </div>
+    <div *ngFor="let note of userNotes">
+        <div>
+            <h3>{{ note.title }}</h3>
+            <div>
+                <label for="">Priority</label>
+                <div>
+                    <input type="radio" name="depth" value="high" (change)="handleNoteDepth($event)">
+                    <input type="radio" name="depth" value="mid" (change)="handleNoteDepth($event)">
+                    <input type="radio" name="depth" value="low" (change)="handleNoteDepth($event)">
+                </div>
+                <input type="text" name="" id="" [value]="currentNoteDepth">
+            </div>
+            <div>
+                <textarea name="" id="" [value]="note.text"></textarea>
+            </div>
+            <div>
+                <span>Create On: {{ note.created_at }}</span>
+                <span>Updated On: {{ note.updated_at }}</span>
+            </div>
+        </div>
+    </div>
+</section>

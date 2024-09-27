@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, take } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -24,14 +24,14 @@ export class AuthService {
     private jwt: JwtHelperService
   ) {}
 
-  private baseUrl = 'http://127.0.0.1:5000/auth/';
+  private devUrl: string = 'http://127.0.0.1:5000/auth/';
 
   public registerUser(data: {
     username: string;
     password: string;
     email: string;
   }): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'register', data).pipe(
+    return this.http.post<any>(this.devUrl + 'register', data).pipe(
       map((response) => {
         if (response) {
           this.router.navigate(['/login']);
@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   public loginUser(credentials: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'login', credentials).pipe(
+    return this.http.post<any>(this.devUrl + 'login', credentials).pipe(
       map((response) => {
         if (response && response.token) {
           localStorage.setItem('token', response.token);

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { SharedModule } from '../../../shared';
 import { AuthService } from '../../services/auth.service';
+import { NotesService, Note } from '../../services/notes.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,15 +13,32 @@ import { AuthService } from '../../services/auth.service';
 export class DashboardComponent {
 
   constructor (
-    private auth: AuthService,
+    private authService: AuthService,
+    private noteService: NotesService,
   ) {  }
+
+  userNotes: any | null = null;
+  currentNoteDepth: string | null = "low";
 
   logoutUser(): void {
     try {
-      this.auth.logout();
+      this.authService.logout();
     } catch(e) {
       console.log(e);
     }
+  }
+
+  getNotes() {
+    this.noteService.fetchNotesByUser().subscribe(
+      (resp: any) => {
+        this.userNotes = resp;
+        console.log(this.userNotes);
+      }
+    )
+  }
+
+  handleNoteDepth(e: any) {
+    this.currentNoteDepth = e.target.value ?? "low";
   }
 
 }

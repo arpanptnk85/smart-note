@@ -38,6 +38,7 @@ def create_app(test_config=None):
     # Cross-Site 
     CORS(app, resources={
         r"/auth/*": {'origins': 'http://localhost:4200', 'methods': ['GET', 'POST']},
+        r"/api/*": {'origins': 'http://localhost:4200', 'methods': ['GET', 'POST']},
     })
 
     # Register blueprint for routes
