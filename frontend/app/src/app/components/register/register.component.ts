@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { SharedModule } from '../../../shared';
+import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
