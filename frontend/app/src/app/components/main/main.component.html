@@ -1,0 +1,13 @@
+<section>
+    <div></div>
+    <div class="sidenav-container">
+        <ul>
+            <li><a [routerLink]="['/main/notes']">Notes</a></li>
+            <li><a [routerLink]="['/main/tasks']">Tasks</a></li>
+            <li><a [routerLink]="['/main/todos']">Todos</a></li>
+        </ul>
+    </div>
+    <div class="components-container">
+        <router-outlet></router-outlet>
+    </div>
+</section>
