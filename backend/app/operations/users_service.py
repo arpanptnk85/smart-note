@@ -1,6 +1,7 @@
 import logging
 from app.models import Users
 from typing import Any, Dict
+from .cache_service import user_cache
 from app.utils import DuplicateItemError
 from werkzeug.security import generate_password_hash
 from mongoengine.errors import DoesNotExist, ValidationError, NotUniqueError
@@ -62,11 +63,25 @@ def create_user(username: str, password: str, email: str) -> Any:
 # Get user by _id
 def get_user_by_id(user_id):
     try:
+        cached_info = user_cache.get_info(hkey=user_id)
+        if cached_info:
+            print('Cached')
+            return cached_info
+        
         user = Users.objects(id=user_id).first()
-        return get_user_info(user=user)
+        if not user:
+            return {}
+        
+        user_info = get_user_info(user=user)
+        user_cache.set_info(hkey='id', hdict=user_info)
+        print('Database')
+        return user_info
     except DoesNotExist:
         logger.error(f'User with ID {user_id} does not exists.')
         return {}
+    
+    except Exception as e:
+        logger.error(f'Unexpected error occurred while fetching user. {e}')
 
 # Get user by email
 def get_user_by_email(email):

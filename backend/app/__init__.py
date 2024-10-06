@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from .routes.auth_routes import auth_bp
 from .routes.user_routes import user_bp
 from .routes.note_routes import note_bp
+from .operations.cache_service import redis_service
 from flask_jwt_extended import JWTManager
 
 load_dotenv()
@@ -34,6 +35,9 @@ def create_app(test_config=None):
 
     # Initialize JWT Manager
     jwt = JWTManager(app)
+
+    # Initialize Redis
+    redis_service
 
     # Cross-Site 
     CORS(app, resources={

@@ -4,3 +4,4 @@ python-dotenv==1.0.1
 PyJWT==2.9.0
 Flask-JWT-Extended==4.6.0
 flask-cors==5.0.0
+redis==5.1.1
