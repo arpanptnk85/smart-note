@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
+<<<<<<< Updated upstream
 import { SharedModule } from '../../shared/shared.module';
+=======
+import { SharedModule } from '../../../shared';
+>>>>>>> Stashed changes
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
